@@ -4,6 +4,8 @@ import jwt
 import os
 from dotenv import load_dotenv
 from operator import itemgetter
+from django.views.generic import TemplateView
+from django.views.decorators.cache import never_cache
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -23,6 +25,10 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+# Serve Single Page Application
+index = never_cache(TemplateView.as_view(template_name='index.html'))
 
 # Create your views here.
 
