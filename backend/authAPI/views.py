@@ -82,6 +82,7 @@ def login_user(request):
     try:
         credentials = json.loads(request.body)
 
+        print(credentials)
         # validate input data
         err = validator(["email", "password"], credentials)
         if len(err) > 0:
@@ -89,7 +90,7 @@ def login_user(request):
 
         # get the input values
         email, password = itemgetter("email", "password")(credentials)
-
+        print(email, password, type(email), type(password))
         # check whether the email exists or not
         user = User.objects.filter(email=email)
         if len(user) == 0:
