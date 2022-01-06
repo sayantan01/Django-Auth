@@ -28,7 +28,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 # Serve Single Page Application
-index = never_cache(TemplateView.as_view(template_name='index.html'))
+index = never_cache(TemplateView.as_view(template_name="index.html"))
 
 # Create your views here.
 
@@ -82,7 +82,6 @@ def login_user(request):
     try:
         credentials = json.loads(request.body)
 
-        print(credentials)
         # validate input data
         err = validator(["email", "password"], credentials)
         if len(err) > 0:
@@ -90,7 +89,7 @@ def login_user(request):
 
         # get the input values
         email, password = itemgetter("email", "password")(credentials)
-        print(email, password, type(email), type(password))
+
         # check whether the email exists or not
         user = User.objects.filter(email=email)
         if len(user) == 0:
@@ -109,10 +108,8 @@ def login_user(request):
             SECRET_KEY,
         )
 
-        print(token)
         # serialize the user object and return the response
         serializer = UserSerializer(user[0])
-        print(serializer)
         return JsonResponse({"token": token, "user": serializer.data})
     except Exception as e:
         print("Exception occurred!!", e)
@@ -161,7 +158,7 @@ def delete_user(request):
         user = User.objects.filter(email=email)
 
         # if the user does not exist
-        if(len(user) == 0):
+        if len(user) == 0:
             return JsonResponse({"msg": "user does not exist"}, status=400)
 
         # delete the user
@@ -184,16 +181,14 @@ def update_user(request):
         credentials = json.loads(request.body)
 
         # validate input data
-        err = validator(
-            ["email", "username", "address"], credentials
-        )
+        err = validator(["email", "username", "address"], credentials)
         if len(err) > 0:
             return JsonResponse({"msg": err}, status=400)
 
         # get the input values
-        email, username, address = itemgetter(
-            "email", "username", "address"
-        )(credentials)
+        email, username, address = itemgetter("email", "username", "address")(
+            credentials
+        )
 
         # get the user
         user = User.objects.filter(email=email)
@@ -202,9 +197,9 @@ def update_user(request):
 
         user = user[0]
         # update the user details
-        user.userName=username
-        user.email=email
-        user.address=address
+        user.userName = username
+        user.email = email
+        user.address = address
         user.save()
 
         # get the updated list of users
@@ -215,5 +210,3 @@ def update_user(request):
     except Exception as e:
         print("Exception occurred!!", e)
         return JsonResponse({"msg": "Internal server error"}, status=500)
-
-

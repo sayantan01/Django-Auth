@@ -70,7 +70,6 @@ function Signup(props) {
       password2: values.password2,
       address: values.address,
     };
-    console.log(userObj);
     axios
       .post("/api/signup", userObj)
       .then((res) => {

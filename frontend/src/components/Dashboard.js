@@ -2,28 +2,71 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
-import { Row, Col, Button, Alert, Spinner } from "react-bootstrap";
+import { Row, Col, Button, Modal, Alert, Spinner } from "react-bootstrap";
 import { Helmet } from "react-helmet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 function Dashboard(props) {
+  /************* States **********************/
   const [users, setUsers] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [successful, setSuccessful] = useState(false);
+  const [editsuccess, setEditsuccess] = useState(false);
+  const [show, setShow] = useState(false);
+  const [user, setUser] = useState({
+    email: "",
+    username: "",
+    address: "",
+  });
 
+  /************* handler functions ************/
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const onChangeName = (e) => {
+    e.persist();
+    setUser((user) => ({
+      ...user,
+      username: e.target.value,
+    }));
+  };
+
+  const onChangeAddress = (e) => {
+    e.persist();
+    setUser((user) => ({
+      ...user,
+      address: e.target.value,
+    }));
+  };
+
+  const handleEdit = (e) => {
+    setSubmitted(true);
+    axios
+      .put("api/udpate", user)
+      .then((res) => {
+        console.log("User edited successfully!");
+        setEditsuccess(true);
+        setSubmitted(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setSubmitted(false);
+      });
+  };
+
+  /********** Effect hook to fetch the users data from backend ***********/
   useEffect(() => {
     (async function fetchdata() {
       try {
         const response = await axios.get("/api/users");
         const { users } = response.data;
         setUsers(users);
-      } catch (err) {
-        console.log("error!! ", err);
-      }
+      } catch (err) {}
     })();
   }, [users]);
 
+  /******************* A row component for user details table **************/
   const TableRow = (props) => {
     return (
       <tr>
@@ -31,16 +74,26 @@ function Dashboard(props) {
         <td>{props.email}</td>
         <td>{props.address}</td>
         <td>
-          <Button variant="success" value={props.email}>
+          <Button
+            variant="success"
+            onClick={() => {
+              setUser((user) => ({
+                ...user,
+                username: props.username,
+                email: props.email,
+                address: props.address,
+              }));
+              handleShow();
+            }}
+          >
             <FontAwesomeIcon icon={faEdit} />
           </Button>
         </td>
         <td>
           <Button
             variant="danger"
-            value={props.email}
             onClick={() => {
-              setSubmitted(true)
+              setSubmitted(true);
               axios
                 .delete("/api/delete", {
                   headers: {},
@@ -65,13 +118,22 @@ function Dashboard(props) {
     );
   };
 
+  /*************** Function to render a row of the user details table *********************/
   const renderRow = () => {
     if (users === null) return;
     return users.map((user, i) => {
-      return (<TableRow key={i} username={user.userName} email={user.email} address={user.address} />);
+      return (
+        <TableRow
+          key={i}
+          username={user.userName}
+          email={user.email}
+          address={user.address}
+        />
+      );
     });
   };
 
+  /***************** Actual return body of the component ******************************/
   return (
     <div className="container align-content-center my-3">
       {props.token === null && <Redirect to="/Login" />}
@@ -81,9 +143,16 @@ function Dashboard(props) {
           onClose={() => setSuccessful(false)}
           dismissible
         >
-          <p>
-            Successfully deleted user
-          </p>
+          <p>Successfully deleted user</p>
+        </Alert>
+      )}
+      {editsuccess && (
+        <Alert
+          variant="success"
+          onClose={() => setEditsuccess(false)}
+          dismissible
+        >
+          <p>Successfully edited user</p>
         </Alert>
       )}
       <Helmet>
@@ -95,9 +164,64 @@ function Dashboard(props) {
       </h2>
 
       {submitted && (
-            <Spinner animation="border" variant="primary" className="mx-auto" />
-        )}
+        <Spinner animation="border" variant="primary" className="mx-auto" />
+      )}
 
+      {/************************ Modal to edit user details ********************/}
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Edit Details: <p style={{ color: "red" }}>{user.email}</p>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form>
+            <div className="d-grid gap-2 col-8 mx-auto my-3">
+              <label>
+                Username<sup style={{ color: "red" }}>*</sup>
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter user name"
+                value={user.username}
+                onChange={onChangeName}
+              />
+            </div>
+            <div className="d-grid gap-2 col-8 mx-auto my-3">
+              <label>
+                Address<sup style={{ color: "red" }}>*</sup>
+              </label>
+              <div className="input-group">
+                <textarea
+                  className="form-control"
+                  placeholder="Enter the address"
+                  value={user.address}
+                  onChange={onChangeAddress}
+                />
+              </div>
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleEdit}
+            disabled={
+              user.email === "" || user.address === "" || user.username === ""
+                ? true
+                : false
+            }
+          >
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/************************** Table to display users **************************/}
       <Row className="my-5 d-flex justify-content-center">
         <Col lg={8}>
           <table

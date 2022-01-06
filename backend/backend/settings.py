@@ -14,7 +14,7 @@ SECRET_KEY = "django-insecure-)56(64nb(e(17*0$dk9#2v#zq9^9&n-ug5gcn#ldh8o2h$qx38
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['django-auth-2022.herokuapp.com', '*']
+ALLOWED_HOSTS = ["django-auth-2022.herokuapp.com", "*"]
 
 
 # Application definition
@@ -61,9 +61,9 @@ TEMPLATES = [
     },
 ]
 
-#STATICFILES_DIRS = [
+# STATICFILES_DIRS = [
 #    os.path.join(BASE_DIR, "build/static"),
-#]
+# ]
 
 
 WSGI_APPLICATION = "backend.wsgi.application"
@@ -79,7 +79,7 @@ DATABASES = {
         "USER": "xzylvcyujmjqxg",
         "PASSWORD": "1d4547019b2090ba43b339820e3dd78b05d3f3d3ffbfcc36c303f2e83e6b1e81",
         "HOST": "ec2-3-224-251-59.compute-1.amazonaws.com",
-        "PORT":  "5432"
+        "PORT": "5432",
     }
 }
 
