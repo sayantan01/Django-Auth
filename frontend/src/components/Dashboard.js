@@ -1,8 +1,6 @@
-import React, { useEffect } from "react";
-import { Row } from "react-bootstrap";
+import React from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
-import { Helmet } from "react-helmet";
 
 function Dashboard(props) {
   return (
