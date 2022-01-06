@@ -109,8 +109,10 @@ def login_user(request):
             SECRET_KEY,
         )
 
+        print(token)
         # serialize the user object and return the response
         serializer = UserSerializer(user[0])
+        print(serializer)
         return JsonResponse({"token": token, "user": serializer.data})
     except Exception as e:
         print("Exception occurred!!", e)
