@@ -18,7 +18,7 @@ from passlib.context import CryptContext
 
 from .models import User
 from .serializers import UserSerializer
-from .validator import validator
+from .validator import validator, jwt_validator
 
 load_dotenv()
 
@@ -133,6 +133,9 @@ def get_all_users():
 @require_http_methods("GET")
 def get_users(request):
     try:
+        err = jwt_validator(request)
+        if len(err) > 0:
+            return JsonResponse({"msg": err}, status=403)
         resUsers = get_all_users()
         return JsonResponse({"users": resUsers})
     except Exception as e:
@@ -144,7 +147,10 @@ def get_users(request):
 @require_http_methods("DELETE")
 def delete_user(request):
     try:
-        print(request.body)
+        err = jwt_validator(request)
+        if len(err) > 0:
+            return JsonResponse({"msg": err}, status=403)
+
         credentials = json.loads(request.body)
         # validate input data
         err = validator(["email"], credentials)
@@ -178,6 +184,9 @@ def delete_user(request):
 @require_http_methods("PUT")
 def update_user(request):
     try:
+        err = jwt_validator(request)
+        if len(err) > 0:
+            return JsonResponse({"msg": err}, status=403)
         credentials = json.loads(request.body)
 
         # validate input data

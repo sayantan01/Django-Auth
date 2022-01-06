@@ -42,8 +42,11 @@ function Dashboard(props) {
 
   const handleEdit = (e) => {
     setSubmitted(true);
+    const headers = {
+      Authorization: "Bearer " + props.token,
+    };
     axios
-      .put("api/udpate", user)
+      .put("api/udpate", user, { headers })
       .then((res) => {
         console.log("User edited successfully!");
         setEditsuccess(true);
@@ -59,12 +62,16 @@ function Dashboard(props) {
   useEffect(() => {
     (async function fetchdata() {
       try {
-        const response = await axios.get("/api/users");
+        const response = await axios.get("/api/users", {
+          headers: {
+            Authorization: "Bearer " + props.token,
+          },
+        });
         const { users } = response.data;
         setUsers(users);
       } catch (err) {}
     })();
-  }, [users]);
+  }, [users, props.token]);
 
   /******************* A row component for user details table **************/
   const TableRow = (props) => {
@@ -96,7 +103,7 @@ function Dashboard(props) {
               setSubmitted(true);
               axios
                 .delete("/api/delete", {
-                  headers: {},
+                  headers: { Authorization: "Bearer " + props.token },
                   data: { email: props.email },
                 })
                 .then((res) => {
@@ -128,6 +135,7 @@ function Dashboard(props) {
           username={user.userName}
           email={user.email}
           address={user.address}
+          token={props.token}
         />
       );
     });
@@ -162,7 +170,10 @@ function Dashboard(props) {
       <h2 id="user_details_title" className="d-flex justify-content-center">
         User Details
       </h2>
-
+      <p style={{ color: "gray" }}>
+        *If you edit or delete your own account, then changes will be reflected
+        in your next session. Current session will remain unaffected
+      </p>
       {submitted && (
         <Spinner animation="border" variant="primary" className="mx-auto" />
       )}
