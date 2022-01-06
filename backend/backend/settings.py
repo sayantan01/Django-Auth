@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -74,8 +75,12 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "d5r0rvokrcrvm1",
+        "USER": "xzylvcyujmjqxg",
+        "PASSWORD": "1d4547019b2090ba43b339820e3dd78b05d3f3d3ffbfcc36c303f2e83e6b1e81",
+        "HOST": "ec2-3-224-251-59.compute-1.amazonaws.com",
+        "PORT":  "5432"
     }
 }
 
